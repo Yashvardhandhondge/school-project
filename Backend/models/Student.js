@@ -40,6 +40,15 @@ const studentSchema = new mongoose.Schema({
   parentEmail:{
     type:String,
     default: null
+  },
+  sendNotifications:{
+    type:Boolean,
+    default: false
+  },
+  schoolId:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'School', 
+    default: null,
   }
 });
 

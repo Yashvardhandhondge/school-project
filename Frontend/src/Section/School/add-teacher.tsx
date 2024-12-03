@@ -71,13 +71,12 @@ export default function AddTeacher() {
 
       const response = await addTeacher(teacherData, token);
 
-      if (response.status === 200) {
+      if (!response.error) {
         toast({
           title: "Teacher added successfully",
           description: `${name} has been added.`,
         });
-
-        navigate("/viewteachers");
+        navigate("/viewteacher");
       } else {
         toast({
           title: "Error",

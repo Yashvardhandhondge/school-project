@@ -1,19 +1,14 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { School, UserPlus, Users, BookOpen, LogOut,X,MenuIcon, ClipboardIcon} from 'lucide-react';
+import { Users, LogOut,X,MenuIcon, ClipboardIcon} from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 const navItems = [
-  { href: '/addschool', label: 'School', icon: School },
-  { href: '/addteacher', label: 'Add Teacher', icon: UserPlus },
-  { href: '/addstudent', label: 'Add Student', icon: UserPlus },
-  { href: '/viewteacher', label: 'View Teachers', icon: Users },
-  { href: '/viewstudent', label: 'View Students', icon: BookOpen },
-  { href: '/createform', label: 'Create Forms', icon: ClipboardIcon },
-  { href: '/viewforms', label: 'View Forms', icon: ClipboardIcon },
+  { href: '/teachers/viewstudent', label: 'Students', icon: Users },
+  { href: '/teachers/viewforms', label: 'Manage Points', icon: ClipboardIcon },
 ];
 
-export function SideNav() {
+export function TeacherSideNav() {
   const navigate = useNavigate();
   const[toogle,Settoogle] = useState(false);
 
@@ -80,7 +75,6 @@ export function SideNav() {
           </li>
         ))}
       </ul>
-      {/* Logout Button */}
       <div className="px-4 py-2 mt-4 border-t">
         <button
           onClick={handleLogout}

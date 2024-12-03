@@ -16,7 +16,8 @@ export default function AddStudent() {
     password: "",
     className: "",
     name : "",
-    parentEmail : ""
+    parentEmail : "",
+    sendNotifications : false
   })
   const [loading, setLoading] = useState(false)
 
@@ -34,7 +35,7 @@ export default function AddStudent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    const { name, password, className, email, parentEmail } = formData
+    const { name, password, className, email, parentEmail, sendNotifications } = formData
 
     if (!name || !password || !className || !parentEmail) {
       toast({
@@ -64,8 +65,9 @@ export default function AddStudent() {
         name: name,
         password: password,
         standard: className,
-          email : email,
-        parentEmail : parentEmail
+        email : email,
+        parentEmail : parentEmail,
+        sendNotifications : sendNotifications
         
       }
 
@@ -73,13 +75,13 @@ export default function AddStudent() {
 
       const response = await addStudent(studentData,token)
 
-      if (response.status === 200) {
+      if (!response.error) {
         toast({
           title: "Student added successfully",
           description: `${name} has been added.`,
         })
         
-        navigate("/viewstudents")
+        navigate("/viewstudent")
       } else {
         toast({
           title: "Error",
@@ -94,7 +96,8 @@ export default function AddStudent() {
         password: "",
         className: "",
         email: "",
-        parentEmail: ""
+        parentEmail: "",
+        sendNotifications : false
       })
 
     } catch (error) {
@@ -151,7 +154,7 @@ export default function AddStudent() {
             onChange={handleChange}
             required
           />
-          <Checkbox className="mt-2"  /><span className="text-sm ml-2 gap-x-1 inline-block  text-semibold ">Send email notification to parent</span>
+          <Checkbox className="mt-2" checked={formData.sendNotifications} onCheckedChange={(e)=>setFormData({...formData,sendNotifications:e as boolean})}  /><span className="text-sm ml-2 gap-x-1 inline-block  text-semibold ">Send email notification to parent</span>
         </div>
 
         <div>

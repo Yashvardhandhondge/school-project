@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs"
 import Teacher from "../models/Teacher.js"
 import Student from "../models/Student.js"
 import {Role} from '../enum.js';
+
 export const addSchool = async (req,res)=>{
     const {
         name,
@@ -104,3 +105,5 @@ export const addStudent = async (req, res) => {
         return res.status(500).json({ message: 'Server Error', error: error.message });
     }
 }
+
+

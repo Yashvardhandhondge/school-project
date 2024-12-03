@@ -1,3 +1,4 @@
+import { AnswerType, AnswerTypeArray } from "@/lib/types";
 import axios from "axios";
 
 
@@ -26,7 +27,10 @@ export const signIn = async (data:{
         const response = await axios.post(`${API_URL}/auth/login`, data);
         return response.data;
     } catch (error) {
-        return {error};
+        if (axios.isAxiosError(error) && error.response) {
+            return { error: error.response.data.message };
+        }
+        return { error: 'An unexpected error occurred' };
     }
 }
 export const addStudent = async (data:{
@@ -34,7 +38,8 @@ export const addStudent = async (data:{
     password: string,
     standard: string,
     name: string,
-    
+    sendNotifications: boolean,
+    parentEmail: string
 }, token: string) => {
     try {
         const response = await axios.post(`${API_URL}/student/addStudent`, data, {
@@ -220,6 +225,65 @@ export const updateSchool = async (data:Partial<{
             }
         });
         return response;
+    } catch (error) {
+        return {error};
+    }
+}
+
+
+export const getForms = async (token: string) => {
+    try {
+        const response = await axios.get(`${API_URL}/form/getForms`, {
+            headers: {
+                token
+            }
+        });
+        return response.data;
+    } catch (error) {
+        return {error};
+    }
+}
+
+export const createForm = async (data:any, token: string) => {
+    try {
+        const response = await axios.post(`${API_URL}/schoolAdmin/createForm`, data, {
+            headers: {token}
+        });
+        return response.data;
+    } catch (error) {
+        return {error};
+    }
+}
+
+export const getFormById = async (id:string, token: string) => {
+    try {
+        const response = await axios.get(`${API_URL}/form/getFormById/${id}`,{
+            headers: {
+                token
+            }
+        });
+        return response.data;
+    } catch (error) {
+        return {error};
+    }
+}
+
+export const submitFormTeacher = async (data:AnswerType, formId:string, token: string) => {
+    try {
+        const answers:AnswerTypeArray = Object.entries(data).map(([questionId, answer]) => ({
+            questionId,
+            answer: answer.answer,
+            isAward: answer.isAward,
+            points: 0
+        }))
+        console.log(answers);
+        
+        const response = await axios.post(`${API_URL}/form/submitFormTeacher/${formId}`, {
+            answers
+        }, {headers: {
+            token
+        }});
+        return response.data;
     } catch (error) {
         return {error};
     }

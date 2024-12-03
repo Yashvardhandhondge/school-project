@@ -125,7 +125,7 @@ export default function SchoolPage() {
           ? await updateSchool(formData, school._id, token)
           : await addSchool(formData, token);
 
-        if (response.status === 200) {
+        if (!response.error) {
           toast({
             title: isEditing
               ? "School updated successfully"

@@ -42,7 +42,8 @@ export const addTeacher = async (req, res) => {
             password: hashedPassword,
             subject,
             role: Role.Teacher,
-            recieveMails: recieveMails || false
+            recieveMails: recieveMails || false,
+            schoolId: schoolAdmin.schoolId
         })
         await School.findOneAndUpdate({
             _id: schoolAdmin.schoolId

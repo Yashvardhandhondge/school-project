@@ -1,4 +1,6 @@
+import { Role } from "../enum.js";
 import School from "../models/School.js";
+import Teacher from "../models/Teacher.js";
 export const getAllSchools = async (req, res) => {
     try{
         const schools = await School.find()
@@ -13,7 +15,14 @@ export const getAllSchools = async (req, res) => {
 
 export const getStudents = async (req, res) => {
     try {
-        const school = await School.findOne({ createdBy: req.user.id }).populate('students');
+        let school;
+        if(req.user.role === Role.Teacher){
+            const teacher = await Teacher.findById(req.user.id);
+            school = await School.findOne({ _id: teacher.schoolId }).populate('students');
+        }else{
+            school = await School.findOne({ createdBy: req.user.id }).populate('students');
+        }
+
         if (!school) {
             return res.status(404).json({ message: 'School not found' });
         }

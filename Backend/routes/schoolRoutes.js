@@ -6,7 +6,7 @@ import {Role} from '../enum.js';
 const router = express.Router();
 
 router.get('/',getAllSchools);
-router.get('/students',authenticate,authorizeRoles(Role.SchoolAdmin),getStudents);
+router.get('/students',authenticate,authorizeRoles(Role.SchoolAdmin, Role.Teacher),getStudents);
 router.get('/teachers',authenticate,authorizeRoles(Role.SchoolAdmin),getTeachers);
 router.get('/school',authenticate,authorizeRoles(Role.SchoolAdmin),getCurrentSchool);
 router.put('/updateSchool/:id',authenticate,authorizeRoles(Role.SchoolAdmin),updateSchool);

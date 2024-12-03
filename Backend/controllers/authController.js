@@ -25,12 +25,13 @@ export const login = async (req, res) => {
         }
         default: {
             user = await Admin.findOne({email})
-            if(!user?.approved) return res.status(401).json({ message: 'User not approved' });  
             break
         }
       }
 
       if (!user) return res.status(404).json({ message: 'User not found' });
+
+      if(role === Role.Admin && !user.approved) return res.status(401).json({ message: 'User not approved' });
        
 
       const isMatch = await bcrypt.compare(password, user.password);

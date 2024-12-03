@@ -36,6 +36,11 @@ const teacherSchema = new mongoose.Schema({
   recieveMails:{
     type:Boolean,
     default: false
+  },
+  schoolId:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'School', 
+    default: null,
   }
 });
 

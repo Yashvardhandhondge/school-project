@@ -210,7 +210,7 @@ export default function ViewStudents() {
                 }
                 className="w-full px-4 py-2 border rounded"
               />
-              <Checkbox className="mt-2" />
+              <Checkbox checked={editingStudent.sendNotifications} onCheckedChange={(e)=>setEditingStudent({...editingStudent,sendNotifications:e as boolean})} className="mt-2" />
               <span className="text-sm ml-2 gap-x-1 inline-block text-semibold">Send email notification to parent</span>
             </div>
 

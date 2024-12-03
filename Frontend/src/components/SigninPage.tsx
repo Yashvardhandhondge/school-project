@@ -64,8 +64,8 @@ export default function LoginForm() {
             const res = await signIn(formData)
             if (res.error) {
                 toast({
-                    title: "User not approved",
-                    description: "Wait until you are approved!",
+                    title: res.error,
+                    description: "Please try again!",
                     variant: "destructive"
                 })
             } else {
@@ -75,7 +75,7 @@ export default function LoginForm() {
                   if (formData.role === 'SchoolAdmin') {
                     navigate('/addschool')
                 } else if (formData.role === 'Teacher') {
-                    navigate('/teachers')
+                    navigate('/teachers/viewstudent')
                 } else if (formData.role === 'Student') {
                     navigate('/students')
                 }

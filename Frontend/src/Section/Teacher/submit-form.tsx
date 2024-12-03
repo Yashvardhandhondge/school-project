@@ -28,13 +28,13 @@ export default function FormPage( ) {
     getForm(params?.id || "")
   })
 
-  const handleSubmit = async (answers: AnswerType) => {
+  const handleSubmit = async (answers: AnswerType, submittedFor: string) => {
     setIsSubmitting(true)
     console.log('Form submitted with answers:', answers)
     const token = localStorage.getItem('token')
     
     if(token){
-      const response = await submitFormTeacher(answers, params?.id || "", token)
+      const response = await submitFormTeacher(answers, submittedFor, params?.id || "", token)
       if(!response.error){
         toast({ 
           title: 'Form submitted successfully',

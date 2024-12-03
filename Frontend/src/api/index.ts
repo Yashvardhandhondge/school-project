@@ -268,21 +268,28 @@ export const getFormById = async (id:string, token: string) => {
     }
 }
 
-export const submitFormTeacher = async (data:AnswerType, formId:string, token: string) => {
+export const submitFormTeacher = async (data:AnswerType, submittedFor:string, formId:string, token: string) => {
     try {
         const answers:AnswerTypeArray = Object.entries(data).map(([questionId, answer]) => ({
             questionId,
             answer: answer.answer,
-            isAward: answer.isAward,
-            points: 0
+            points: answer.points
         }))
-        console.log(answers);
-        
         const response = await axios.post(`${API_URL}/form/submitFormTeacher/${formId}`, {
-            answers
+            answers,
+            submittedFor
         }, {headers: {
             token
         }});
+        return response.data;
+    } catch (error) {
+        return {error};
+    }
+}
+
+export const getPointHistory = async (token: string) => {
+    try {
+        const response = await axios.get(`${API_URL}/form/getPointHistory`, {headers: {token}});
         return response.data;
     } catch (error) {
         return {error};

@@ -5,19 +5,21 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { AnswerType, Form, Question } from '@/lib/types'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Label } from '@/components/ui/label'
+import { getStudents } from '@/api'
+
 
 
 
 type FormSubmissionProps = {
   form: Form
-  onSubmit: (answers: AnswerType) => void
+  onSubmit: (answers: AnswerType, submittedFor: string) => void
 }
 
 export function FormSubmission({ form, onSubmit }: FormSubmissionProps) {
+  const [submittedFor, setSubmittedFor] = useState("")
   const [answers, setAnswers] = useState<AnswerType>({})
   const [isFormValid, setIsFormValid] = useState(false)
+  const [student, setStudent] = useState<any>([])
 
   useEffect(() => {
     const allCompulsoryQuestionsAnswered = form.questions
@@ -29,13 +31,22 @@ export function FormSubmission({ form, onSubmit }: FormSubmissionProps) {
     setIsFormValid(allCompulsoryQuestionsAnswered)
   }, [answers, form.questions])
 
-  const handleInputChange = (questionId: string, value: {answer: string, isAward: boolean, points: number}) => {
+  useEffect(() => {
+    const getStudent = async () => {
+      const token = localStorage.getItem("token") || ""
+      const response = await getStudents(token)
+      setStudent(response.students)
+    }
+    getStudent()
+  }, [])
+
+  const handleInputChange = (questionId: string, value: {answer: string, points: number}) => {
     setAnswers(prev => ({ ...prev, [questionId]: value }))
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    onSubmit(answers)
+    onSubmit(answers, submittedFor)
   }
 
   const renderQuestion = (question: Question) => {
@@ -45,7 +56,7 @@ export function FormSubmission({ form, onSubmit }: FormSubmissionProps) {
           <Input
             type="text"
             value={answers[question.id]?.answer as string || ''}
-            onChange={(e) => handleInputChange(question.id, {answer: e.target.value, isAward: answers[question.id]?.isAward || false, points: question.points})}
+            onChange={(e) => handleInputChange(question.id, {answer: e.target.value, points: question.maxPoints})}
             required={question.isCompulsory}
           />
         )
@@ -55,16 +66,26 @@ export function FormSubmission({ form, onSubmit }: FormSubmissionProps) {
           <Input
             type="number"
             value={answers[question.id]?.answer as string || ''}
-            onChange={(e) => handleInputChange(question.id, {answer: e.target.value, isAward: answers[question.id]?.isAward || false, points: question.points})}
+            onChange={(e) => handleInputChange(question.id, {answer: e.target.value, points: question.pointsType !== 'Deduct' ? parseInt(e.target.value) : parseInt(e.target.value) * -1})}
             required={question.isCompulsory}
+            max={question.maxPoints}
+            min={0}
           />
         )
       
       case 'select':
+        
         return (
           <Select
             value={answers[question.id]?.answer as string || ''}
-            onValueChange={(value) => handleInputChange(question.id, {answer: value, isAward: answers[question.id]?.isAward || false, points: question.options?.find(o => o.value === value)?.points || 0})}
+            onValueChange={(value) => {
+              const selectedOption = question.options?.find(o => o.value === value);
+              const points = selectedOption ? selectedOption.points : 0;
+              handleInputChange(question.id, {
+                answer: value,
+                points: question.pointsType !== 'Deduct' ? points : points * -1,
+              });
+            }}
             required={question.isCompulsory}
           > 
             <SelectTrigger>
@@ -73,7 +94,7 @@ export function FormSubmission({ form, onSubmit }: FormSubmissionProps) {
             <SelectContent>
               {question.options?.map((option, index) => (
                 <SelectItem key={index} value={option.value}>
-                  {option.value} {option.points ? <span className="text-muted-foreground">({option.points} Points)</span> : ''}
+                  {option.value} {option.points ? <span className="text-muted-foreground">({question.pointsType === 'Award' ? '+' : '-'} {option.points} Points)</span> : ''}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -91,27 +112,36 @@ export function FormSubmission({ form, onSubmit }: FormSubmissionProps) {
         <p className="text-muted-foreground">Form Type: {form.formType}</p>
       </div>
       <ScrollArea className="h-[43vh] pr-4">
-        <div className="space-y-6">
+        <div className="space-y-6 px-2">
+          <div>
+            <p>Student:</p>
+            <Select value={submittedFor} onValueChange={(value) => setSubmittedFor(value)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a student" />
+              </SelectTrigger>
+              <SelectContent>
+                {student && student.map((student: any) => (
+                  <SelectItem key={student._id} value={student._id}>
+                    {student.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           {form.questions.map((question, index) => (
-            <div key={question.id} className="border-b pb-4 px-2">
+            <div key={question.id} className="border-b pb-4 ">
+              
               <h3 className="font-medium mb-2">
                 {index + 1}. {question.text} {
-                  question.type === 'select' ? <span className="text-muted-foreground"></span> : <span className="text-muted-foreground">({question.points} Points)</span>
+                  question.type === 'select' || question.pointsType === 'None' ? <span className="text-muted-foreground"></span> : <span className="text-muted-foreground">(Upto {question.maxPoints} Points)</span>
+                }
+                {
+                  question.pointsType === 'Award' ? <span className="text-green-500 ml-1">Award</span> : question.pointsType === 'Deduct' ? <span className="text-red-500 ml-1">Deduct</span> : ''
                 }
                 {question.isCompulsory && <span className="text-red-500 ml-1">*</span>}
               </h3>
               {renderQuestion(question)}
               <div>
-                <RadioGroup
-                  value={answers[question.id]?.isAward || false ? 'Award' : 'Deduct'}
-                  onValueChange={(value) => handleInputChange(question.id, {answer: answers[question.id]?.answer as string, isAward: value === 'Award', points: answers[question.id]?.points || 0})}
-                  className='flex flex-row gap-2 my-2'
-                >
-                  <RadioGroupItem  value="Award" id="r1" />
-                  <Label htmlFor="r1">Award</Label>
-                  <RadioGroupItem value="Deduct" id="r2" />
-                  <Label htmlFor="r2">Deduct</Label>
-                </RadioGroup>
               </div>
               <div>
              </div>

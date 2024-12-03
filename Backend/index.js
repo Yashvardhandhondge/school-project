@@ -2,18 +2,18 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import connectDB from './config/db.js';
-import AdminJs from 'adminjs';
-import AdminJSExpress from '@adminjs/express';
+// import AdminJs from 'adminjs';
+// import AdminJSExpress from '@adminjs/express';
 
-import * as AdminJSMongoose from '@adminjs/mongoose'
+// import * as AdminJSMongoose from '@adminjs/mongoose'
 
-import bcrypt from 'bcryptjs';
+// import bcrypt from 'bcryptjs';
 import session from 'express-session'; 
 
-import User from './models/Admin.js';
-import School from './models/School.js';
-import Teacher from './models/Teacher.js';
-import Student from './models/Student.js';
+// import User from './models/Admin.js';
+// import School from './models/School.js';
+// import Teacher from './models/Teacher.js';
+// import Student from './models/Student.js';
 
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
@@ -46,40 +46,40 @@ connectDB().then(() => {
   console.log("MongoDB connected");
 
   
-  AdminJs.registerAdapter(AdminJSMongoose);
+  // AdminJs.registerAdapter(AdminJSMongoose);
 
 
-  const adminJs = new AdminJs({
-    resources: [
-      { resource: User, options: { properties: { password: { isVisible: false } } } },
-      { resource: School },
-      { resource: Teacher },
-      { resource: Student },
+  // const adminJs = new AdminJs({
+  //   resources: [
+  //     { resource: User, options: { properties: { password: { isVisible: false } } } },
+  //     { resource: School },
+  //     { resource: Teacher },
+  //     { resource: Student },
       
-    ],
-    resave: false, 
-    saveUninitialized: false, 
-    secret: process.env.SESSION_SECRET,
-    rootPath: '/admin',
-  });
+  //   ],
+  //   resave: false, 
+  //   saveUninitialized: false, 
+  //   secret: process.env.SESSION_SECRET,
+  //   rootPath: '/admin',
+  // });
 
 
-  const adminRouter = AdminJSExpress.buildAuthenticatedRouter(
-    adminJs,
-    {
-      authenticate: async (email, password) => {
-        const user = await User.findOne({ email, role: 'Admin' });
-        if (user && (await bcrypt.compare(password, user.password))) {
-          return { id: user._id, email: user.email, role: user.role };
-        }
-        return null;
-      },
-      cookiePassword: process.env.JWT_SECRET,
-    }
-  );
+  // const adminRouter = AdminJSExpress.buildAuthenticatedRouter(
+  //   adminJs,
+  //   {
+  //     authenticate: async (email, password) => {
+  //       const user = await User.findOne({ email, role: 'Admin' });
+  //       if (user && (await bcrypt.compare(password, user.password))) {
+  //         return { id: user._id, email: user.email, role: user.role };
+  //       }
+  //       return null;
+  //     },
+  //     cookiePassword: process.env.JWT_SECRET,
+  //   }
+  // );
 
   
-  app.use(adminJs.options.rootPath, adminRouter);
+  // app.use(adminJs.options.rootPath, adminRouter);
 }).catch((error) => {
   console.error('Error connecting to database', error);
 });

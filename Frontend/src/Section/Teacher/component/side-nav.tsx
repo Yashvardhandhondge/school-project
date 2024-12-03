@@ -1,11 +1,13 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Users, LogOut,X,MenuIcon, ClipboardIcon} from 'lucide-react';
+import { Users, LogOut,X,MenuIcon} from 'lucide-react';
+// import { ClipboardIcon} from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 const navItems = [
   { href: '/teachers/viewstudent', label: 'Students', icon: Users },
-  { href: '/teachers/viewforms', label: 'Manage Points', icon: ClipboardIcon },
+  // { href: '/teachers/viewforms', label: 'Manage Points', icon: ClipboardIcon },
+  // { href: '/teachers/pointhistory', label: 'Point History', icon: ClipboardIcon },
 ];
 
 export function TeacherSideNav() {

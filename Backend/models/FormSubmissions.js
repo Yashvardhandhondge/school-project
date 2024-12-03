@@ -12,11 +12,7 @@ const AnswerSchema = new mongoose.Schema({
     points: {
         type: Number,
         required: true,
-    },
-    isAward: {
-        type: Boolean,
-        default: false,
-    },
+    }
 })
 
 const formSubmissionSchema = new mongoose.Schema({

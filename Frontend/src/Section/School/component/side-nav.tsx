@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { School, UserPlus, Users, BookOpen, LogOut,X,MenuIcon, ClipboardIcon} from 'lucide-react';
+import { School, UserPlus, Users, BookOpen, LogOut,X,MenuIcon} from 'lucide-react';
+// import {ClipboardIcon} from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 
@@ -9,8 +10,9 @@ const navItems = [
   { href: '/addstudent', label: 'Add Student', icon: UserPlus },
   { href: '/viewteacher', label: 'View Teachers', icon: Users },
   { href: '/viewstudent', label: 'View Students', icon: BookOpen },
-  { href: '/createform', label: 'Create Forms', icon: ClipboardIcon },
-  { href: '/viewforms', label: 'View Forms', icon: ClipboardIcon },
+  // { href: '/createform', label: 'Create Forms', icon: ClipboardIcon },
+  // { href: '/viewforms', label: 'View Forms', icon: ClipboardIcon },
+  // { href: '/pointhistory', label: 'Point History', icon: ClipboardIcon },
 ];
 
 export function SideNav() {

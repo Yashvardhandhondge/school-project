@@ -10,7 +10,6 @@ import { Question } from '@/lib/types'
 
 type FormType = 'AwardPoints' | 'Feedback' | 'PointWithdraw' | 'DeductPoints'
 
-
 export default function FormBuilder() {
   const [formName, setFormName] = useState('')
   const [formType, setFormType] = useState<FormType>('AwardPoints')
@@ -84,13 +83,16 @@ const clearForm = () => {
         </Select>
       </div>
       <div className="space-y-4">
-        {questions.map((question) => (
+        {questions.map((question, index) => (
+          <>
+          <p className='text-sm text-muted-foreground'>Question {index + 1}</p>
           <QuestionBuilder
             key={question.id}
             question={question}
             onUpdate={updateQuestion}
             onRemove={removeQuestion}
-          />
+            />
+          </>
         ))}
       </div>
       <Button
@@ -100,7 +102,8 @@ const clearForm = () => {
         text: '',
         type: 'text',
         isCompulsory: false,
-        points: 0
+        maxPoints: 0,
+        pointsType: 'Award'
       })}>
         Add Question
       </Button>

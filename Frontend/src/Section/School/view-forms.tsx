@@ -52,7 +52,7 @@ export default function ViewForms() {
   const calculateTotalPoints = (questions: Question[]) =>
   {
     if(questions.length === 0) return 0
-    let sum = questions.reduce((sum, question) => sum + (question.points || 0), 0) 
+    let sum = questions.reduce((sum, question) => sum + (question.maxPoints || 0), 0) 
      questions.forEach(question => {
       if(question.type == 'select'){
         question.options?.forEach(option => {

@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { Trash2 } from 'lucide-react'
-import { Question } from '@/lib/types'
+import { PointsType, Question } from '@/lib/types'
 
 type QuestionBuilderProps = {
   question: Question
@@ -32,6 +32,10 @@ export function QuestionBuilder({ question, onUpdate, onRemove }: QuestionBuilde
       newOptions[index] = {value, points: 0}
       onUpdate({ ...question, options: newOptions })
     }
+  }
+
+  const handlePointsTypeChange = (value: PointsType) => {
+    onUpdate({ ...question, pointsType: value })
   }
 
   const addOption = () => {
@@ -75,15 +79,16 @@ export function QuestionBuilder({ question, onUpdate, onRemove }: QuestionBuilde
           />
           <Label htmlFor={`compulsory-${question.id}`}>Compulsory</Label>
         </div>
-        {(question.type === 'number' || question.type === 'text') && (
+        {(question.type === 'number' || question.type === 'text') && question.pointsType !== 'None' && (
           <div className="flex items-center space-x-2">
-            <Label htmlFor={`points-${question.id}`}>Points</Label>
+            <Label htmlFor={`points-${question.id}`}>Max Points</Label>
             <Input
               type="number"
-              value={question.points}
-              onChange={(e) => onUpdate({ ...question, points: parseInt(e.target.value, 10) || 0 })}
-              placeholder="Enter points"
+              value={question.maxPoints === 0 ? '' : question.maxPoints}
+              onChange={(e) => onUpdate({ ...question, maxPoints: parseInt(e.target.value, 10) || 0 })}
+              placeholder="0"
               className="w-full"
+              min={0}
             />
           </div>
         )}
@@ -105,6 +110,7 @@ export function QuestionBuilder({ question, onUpdate, onRemove }: QuestionBuilde
                  onChange={(e) => onUpdate({ ...question, options: question.options?.map((o, i) => i === index ? {...o, points: parseInt(e.target.value, 10) || 0} : o) })}
                  placeholder="Enter points"
                 className="w-full"
+                min={0}
               />
 
               <Button onClick={() => removeOption(index)} variant="destructive" size="sm">
@@ -117,6 +123,19 @@ export function QuestionBuilder({ question, onUpdate, onRemove }: QuestionBuilde
           </Button>
         </div>
       )}
+      <div className="flex items-center space-x-2">
+        <Label htmlFor={`pointsType-${question.id}`}>Points Type</Label>
+        <Select onValueChange={handlePointsTypeChange} value={question.pointsType}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Points Type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Award">Award</SelectItem>
+            <SelectItem value="Deduct">Deduct</SelectItem>
+            <SelectItem value="None">None</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
       <Button onClick={() => onRemove(question.id)} variant="destructive">
         Remove Question
       </Button>

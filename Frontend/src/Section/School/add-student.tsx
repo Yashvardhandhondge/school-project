@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import { useNavigate } from "react-router-dom"
 import { addStudent } from "@/api/index"
+import { Checkbox } from "@/components/ui/checkbox"
 
 import Loading from "../Loading"
 
@@ -14,7 +15,9 @@ export default function AddStudent() {
     email: "",
     password: "",
     className: "",
-    name : ""
+    name : "",
+    parentEmail : "",
+    sendNotifications : false
   })
   const [loading, setLoading] = useState(false)
 
@@ -32,9 +35,9 @@ export default function AddStudent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    const { name, password, className, email } = formData
+    const { name, password, className, email, parentEmail, sendNotifications } = formData
 
-    if (!name || !password || !className) {
+    if (!name || !password  || !parentEmail) {
       toast({
         title: "Error",
         description: "Please fill all fields.",
@@ -61,8 +64,10 @@ export default function AddStudent() {
       const studentData = {
         name: name,
         password: password,
-        standard: className,
-        email : email
+        standard: className || "",
+        email : email,
+        parentEmail : parentEmail,
+        sendNotifications : sendNotifications
         
       }
 
@@ -70,13 +75,13 @@ export default function AddStudent() {
 
       const response = await addStudent(studentData,token)
 
-      if (response.status === 200) {
+      if (!response.error) {
         toast({
           title: "Student added successfully",
-          description: `${name} has been added.`,
+          description:` ${name} has been added.`,
         })
         
-        navigate("/viewstudents")
+        navigate("/students")
       } else {
         toast({
           title: "Error",
@@ -86,6 +91,14 @@ export default function AddStudent() {
       }
 
       setLoading(false)
+      setFormData({
+        name: "",
+        password: "",
+        className: "",
+        email: "",
+        parentEmail: "",
+        sendNotifications : false
+      })
 
     } catch (error) {
       console.error("An unexpected error occurred. Please try again.")
@@ -106,11 +119,24 @@ export default function AddStudent() {
   
 
   return (
-    <div>
+    <div className="grid place-items-center w-full h-full mt-10 ">
+
+      <div className="bg-white shadow-xl p-4 w-40 sm:w-60 md:w-60 lg:w-96 rounded-lg">
       <h1 className="text-3xl font-bold mb-6">Add Student</h1>
       <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
+       
         <div>
-          <Label htmlFor="name">Email</Label>
+          <Label htmlFor="className">Name</Label>
+          <Input
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div>
+          <Label htmlFor="email">Email</Label>
           <Input
             id="email"
             name="email"
@@ -118,6 +144,34 @@ export default function AddStudent() {
             onChange={handleChange}
             required
           />
+        </div>
+        <div>
+          <Label htmlFor="email">Parent/Guardian Email</Label>
+          <div className="relative">
+          <Input
+            id="parentEmail"
+            name="parentEmail"
+            value={formData.parentEmail}
+            onChange={handleChange}
+            required
+          />
+          <p className="text-xs absolute top-1/2 -translate-y-1/2 right-2 text-gray-400 bg-white h-[90%] flex items-center">Guardian</p>
+          </div>
+        </div>
+        <div>
+          
+          <div className="relative">
+          <Input
+            id="className"
+            name="className"
+            value={formData.className}
+            onChange={handleChange}
+          />
+          <p className="text-xs absolute top-1/2 -translate-y-1/2 right-2 text-gray-400 bg-white h-[90%] flex items-center">Guardian</p>
+
+          </div>
+          (optional)<br/>
+          <Checkbox className="mt-2" checked={formData.sendNotifications} onCheckedChange={(e)=>setFormData({...formData,sendNotifications:e as boolean})}  /><span className="text-sm ml-2 gap-x-1 inline-block  text-semibold ">Send email notification to Parent/Guardian.</span>
         </div>
         <div>
           <Label htmlFor="password">Password</Label>
@@ -130,28 +184,11 @@ export default function AddStudent() {
             required
           />
         </div>
-        <div>
-          <Label htmlFor="className">Class</Label>
-          <Input
-            id="className"
-            name="className"
-            value={formData.className}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <Label htmlFor="className">Name</Label>
-          <Input
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <Button type="submit">Add Student</Button>
+        
+       
+        <Button type="submit" className="bg-[#00a58c]">Add Student</Button>
       </form>
+    </div>
     </div>
   )
 }
